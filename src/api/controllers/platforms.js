@@ -18,6 +18,16 @@ const getPlatformById = async ( req,res, next) => {
         return res.status(400).json("Error en la solicitud")  
     }
     }
+    const getPlatformByName = async (req, res, next) => {
+      try {
+        const { name } = req.params;
+        const platform = await Platform.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } }).populate("movies") 
+        return res.status(200).json(platform);
+      } catch (error) {
+        return res.status(400).json("Error en la solicitud");
+      }
+    };
+    
 
             const postPlatform = async (req, res, next) => {
                 try {
@@ -57,6 +67,7 @@ const getPlatformById = async ( req,res, next) => {
                         module.exports = {
                             getPlatforms,
                             getPlatformById,
+                            getPlatformByName,
                             postPlatform,
                             putPlatform,
                             deletePlatform
