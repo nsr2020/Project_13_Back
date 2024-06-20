@@ -138,6 +138,5 @@ const updateUser = async (req, res, next) =>{
     }
   }
   
-  //exportaciones 
   
   module.exports = { getUsers, register, login , updateUser, deleteUser, removeFromSeenMovies, getUserById}

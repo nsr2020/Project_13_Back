@@ -7,7 +7,7 @@ const storage = new CloudinaryStorage({
    cloudinary: cloudinary,
    params:  {
     folder: "NarcisoIPTV",
-    allowedFormats: ["jpg", "jpge", "png", "gif","webp"]
+    allowedFormats: ["jpg", "jpeg", "png", "gif", "webp"]
 
    }
 })

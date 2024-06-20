@@ -1,23 +1,60 @@
-const Movie = require("../models/movies")
+const { deleteFile } = require("../../utils/deleteFile");
+const Movie = require("../models/movies");
 
-const getMovies = async ( req,res, next) => {
-try {
-    const movies = await Movie.find()
-    return res.status(200).json(movies)
-} catch (error) {
-  return res.status(400).json("Error en la solicitud")  
-}
-}
-const getMovieById = async ( req,res, next) => {
-    try {
-      const {id } =req.params;
-      const movie = await Movie.findById(id)  
-      return res.status(200).json(movie)
-    } catch (error) {
-        return res.status(400).json("Error en la solicitud")  
-    }
-    }
-    const getMoviesByCategoryAndPlatform = async (req, res, next) => {
+const getMovies = async (req, res, next) => {
+	try {
+		const movies = await Movie.find();
+		return res.status(200).json(movies);
+	} catch (error) {
+		return res.status(400).json("Error en la solicitud");
+	}
+};
+const getMovieById = async (req, res, next) => {
+	try {
+		const { id } = req.params;
+		const movie = await Movie.findById(id);
+		return res.status(200).json(movie);
+	} catch (error) {
+		return res.status(400).json("Error en la solicitud");
+	}
+};
+
+const getMoviesByFilters = async (req, res, next) => {
+	try {
+		const { name, category, platform } = req.params;
+		let query = {};
+
+		if (name && name !== "*") {
+			query.name = { $regex: new RegExp(name, "i") };
+		}
+
+		if (category && category !== "*") {
+			query.category = category;
+		}
+
+		if (platform && platform !== "*") {
+			query.platform = platform;
+		}
+
+		const movies = await Movie.find(query);
+
+		if (movies.length === 0) {
+			return res
+				.status(404)
+				.json({
+					error:
+						"No se encontraron películas para los criterios especificados.",
+				});
+		}
+
+		return res.status(200).json(movies);
+	} catch (error) {
+		console.error(error);
+		return res.status(400).json("Error en la solicitud");
+	}
+};
+
+/* const getMoviesByCategoryAndPlatform = async (req, res, next) => {
       try {
         const { platform, category } = req.params;
         let query = {};
@@ -41,8 +78,8 @@ const getMovieById = async ( req,res, next) => {
         console.error(error);
         return res.status(400).json("Error en la solicitud");
       }
-    }
-    const getMoviesByCategory = async ( req,res, next) => {
+    } */
+/* const getMoviesByCategory = async ( req,res, next) => {
         try {
            const { category}= req.params
             const movies = await Movie.find({category}) 
@@ -50,8 +87,8 @@ const getMovieById = async ( req,res, next) => {
         } catch (error) {
             return res.status(400).json("Error en la solicitud")  
         }
-        }
-        const getMoviesByName = async (req, res, next) => {
+        } */
+/*  const getMoviesByName = async (req, res, next) => {
             try {
               const { name } = req.params;
               const movies = await Movie.find({ name: { $regex: new RegExp(name, 'i') } });
@@ -59,8 +96,8 @@ const getMovieById = async ( req,res, next) => {
             } catch (error) {
               return res.status(400).json("Error en la solicitud");
             }
-          };
-            const getMoviesByPlatform = async (req, res, next) => {
+          }; */
+/*   const getMoviesByPlatform = async (req, res, next) => {
                 try {
                   const { platform} = req.params;
                   const movies = await Movie.find({ platform });
@@ -72,50 +109,60 @@ const getMovieById = async ( req,res, next) => {
                     console.log(error);
                   return res.status(400).json("Error en la solicitud", error);
                 }
-              }
-            
-            const postMovie = async (req, res, next) => {
-                try {
-                  const newMovie = new Movie(req.body);
-                  console.log(req.body);
-                  const movieSaved = await newMovie.save();
-                  return res.status(201).json(movieSaved);
-                } catch (error) {
-                  return res.status(400).json(error);
-                }
-              };
+              } */
 
-                const putMovie = async (req, res, next) => {
-                    try {
-                      const { id } = req.params;
-                      const newMovie = new Movie(req.body);
-                      newMovie._id = id;
-                      const movieUpdated = await Movie.findByIdAndUpdate(id, newMovie, {
-                        new: true,
-                      });
-                      return res.status(200).json(movieUpdated);
-                    } catch (error) {
-                      return res.status(400).json("Error en la solicitud");
-                    }
-                  };
-                    const deleteMovie = async ( req,res, next) => {
-                        try {
-                          const {id} = req.params   
-                           const movieDeleted = await Movie.findByIdAndDelete(id) 
-                           return res.status(200).json(movieDeleted)
-                        } catch (error) {
-                            return res.status(400).json("Error en la solicitud")  
-                        }
-                        }
+const postMovie = async (req, res, next) => {
+	try {
+		const newMovie = new Movie(req.body);
+		if (req.file) {
+      newMovie.image = req.file.path;
+    }
+		const movieSaved = await newMovie.save();
+		return res.status(201).json(movieSaved);
+	} catch (error) {
+		return res.status(400).json(error);
+	}
+};
 
-                        module.exports = {
-                            getMovies,
-                            getMovieById,
-                            getMoviesByCategoryAndPlatform,
-                            getMoviesByCategory,
-                            getMoviesByName,
-                            getMoviesByPlatform,
-                            postMovie,
-                            putMovie,
-                            deleteMovie
-                        }
+const putMovie = async (req, res, next) => {
+	try {
+		const { id } = req.params;
+		const newMovie = new Movie(req.body);
+    if(req.file){
+      newMovie.image = req.file.path
+      const olderMovie = await Movie.findById(id);
+      deleteFile(olderMovie.image)
+    }
+		newMovie._id = id;
+		const movieUpdated = await Movie.findByIdAndUpdate(id, newMovie, {
+			new: true,
+		});
+		return res.status(200).json(movieUpdated);
+	} catch (error) {
+    console.log(error);
+		return res.status(400).json("Error en la solicitud");
+	}
+};
+const deleteMovie = async (req, res, next) => {
+	try {
+		const { id } = req.params;
+		const movieDeleted = await Movie.findByIdAndDelete(id);
+    deleteFile(movieDeleted.image)
+		return res.status(200).json(movieDeleted);
+	} catch (error) {
+		return res.status(400).json("Error en la solicitud");
+	}
+};
+
+module.exports = {
+	getMovies,
+	getMovieById,
+	getMoviesByFilters,
+	/* getMoviesByCategoryAndPlatform, */
+	/* getMoviesByCategory, */
+	/* getMoviesByName, */
+	/* getMoviesByPlatform, */
+	postMovie,
+	putMovie,
+	deleteMovie,
+};

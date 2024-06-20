@@ -3,7 +3,7 @@ const movies = require("./movies.json");
 const Movie = require('../src/api/models/movies.js');
 
 mongoose
-.connect('mongodb+srv://narciso_iptv:Nsr2024@cluster0.fjrk5of.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+.connect(process.env.DB_URL)
 .then(async () => {
     const allMovies = await Movie.find()
     if (allMovies.length) {
