@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Movie = require('../src/api/models/movies');
 const fs = require('fs');
+require("dotenv").config()
 
 mongoose.connect(process.env.DB_URL)
   .then(async () => {
