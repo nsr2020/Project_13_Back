@@ -101,10 +101,6 @@ module.exports = {
 	getMovies,
 	getMovieById,
 	getMoviesByFilters,
-	/* getMoviesByCategoryAndPlatform, */
-	/* getMoviesByCategory, */
-	/* getMoviesByName, */
-	/* getMoviesByPlatform, */
 	postMovie,
 	putMovie,
 	deleteMovie,
