@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Movie = require('../src/api/models/movies');
 const fs = require('fs');
 
-mongoose.connect('mongodb+srv://narciso_iptv:Nsr2024@cluster0.fjrk5of.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+mongoose.connect(process.env.DB_URL)
   .then(async () => {
     const allMovies = await Movie.find();
     if (allMovies.length) {
@@ -17,7 +17,7 @@ mongoose.connect('mongodb+srv://narciso_iptv:Nsr2024@cluster0.fjrk5of.mongodb.ne
         console.error('Error al leer el archivo:', err);
         return;
       }
-      const movies = JSON.parse(data); // Parsea el JSON a un array de objetos
+      const movies = JSON.parse(data); 
       try {
         await Movie.insertMany(movies);
         console.log("Movies has been added successfully");

@@ -54,63 +54,6 @@ const getMoviesByFilters = async (req, res, next) => {
 	}
 };
 
-/* const getMoviesByCategoryAndPlatform = async (req, res, next) => {
-      try {
-        const { platform, category } = req.params;
-        let query = {};
-    
-        if (platform) {
-          query.platform = platform;
-        }
-    
-        if (category) {
-          query.category = category;
-        }
-    
-        const movies = await Movie.find(query);
-    
-        if (movies.length === 0) {
-          return res.status(404).json({ error: "No se encontraron películas para los criterios especificados." });
-        }
-    
-        return res.status(200).json(movies);
-      } catch (error) {
-        console.error(error);
-        return res.status(400).json("Error en la solicitud");
-      }
-    } */
-/* const getMoviesByCategory = async ( req,res, next) => {
-        try {
-           const { category}= req.params
-            const movies = await Movie.find({category}) 
-            return res.status(200).json(movies)
-        } catch (error) {
-            return res.status(400).json("Error en la solicitud")  
-        }
-        } */
-/*  const getMoviesByName = async (req, res, next) => {
-            try {
-              const { name } = req.params;
-              const movies = await Movie.find({ name: { $regex: new RegExp(name, 'i') } });
-              return res.status(200).json(movies);
-            } catch (error) {
-              return res.status(400).json("Error en la solicitud");
-            }
-          }; */
-/*   const getMoviesByPlatform = async (req, res, next) => {
-                try {
-                  const { platform} = req.params;
-                  const movies = await Movie.find({ platform });
-                  if (movies.length === 0) {
-                    return res.status(404).json({ error: "No se encontraron películas para la plataforma especificada." });
-                  }
-                  return res.status(200).json(movies);
-                } catch (error) {
-                    console.log(error);
-                  return res.status(400).json("Error en la solicitud", error);
-                }
-              } */
-
 const postMovie = async (req, res, next) => {
 	try {
 		const newMovie = new Movie(req.body);
