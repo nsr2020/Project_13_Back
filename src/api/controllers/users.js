@@ -24,14 +24,14 @@ const getUserById = async (req, res, next) => {
 
 const register = async (req,res,next) => {
     try {
-      const newUser = new User({
+      const newUser = new User(req.body/* {
         userName:req.body.userName,
         password:req.body.password,
         name:req.body.name,
         lastName:req.body.lastName,
         email:req.body.email,
         image:req.body.image,
-      }) 
+      } */) 
       if (req.file ){
         newUser.image = req.file.path
       }
@@ -40,7 +40,7 @@ const register = async (req,res,next) => {
         userName:req.body.userName
       })
       if (duplicatedUser){
-        return res.status(400).json("Usuario o constrasña no valida")
+        return res.status(400).json("User or password not valid")
       }
       const userSaved = await newUser.save()
       return res.status(201).json(userSaved)
